@@ -138,7 +138,7 @@ The preview page:
 - provides a "Copy Current Style" button that copies WeChat inline-style HTML for the selected theme
 
 WeChat rich-text output is generated as inline-style HTML because WeChat editors may strip classes, external CSS, and parts of `<style>`.
-Bundled themes include `wechat-green`, `tech-comic`, `clean-white`, and `ink-note`. `scripts/render-wechat.mjs` supports `--theme`, and `preview.html` uses the same theme definitions for copied WeChat HTML.
+The bundled theme is `coral-tab`, a WeChat style with black body text, coral section labels, and a pale angled tab. `scripts/render-wechat.mjs` supports `--theme`, and `preview.html` uses the same theme definitions for copied WeChat HTML.
 
 ## Reference Link Format
 

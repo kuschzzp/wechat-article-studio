@@ -7,7 +7,7 @@ import { DEFAULT_WECHAT_THEME_ID, getWechatTheme, listWechatThemes } from "./lib
 function 帮助() {
   console.log(`用法：
 node scripts/render-wechat.mjs <文章目录>
-node scripts/render-wechat.mjs <文章目录> --theme tech-comic
+node scripts/render-wechat.mjs <文章目录> --theme coral-tab
 node scripts/render-wechat.mjs --list-themes
 
 功能：

@@ -202,16 +202,43 @@ try {
       word-break: break-word;
     }
     h1, h2, h3 { line-height: 1.28; letter-spacing: 0; }
-    h1 { margin: 0 0 28px; font-size: clamp(28px, 5vw, 42px); }
+    h1 { margin: 0 0 28px; color: black; font-size: clamp(28px, 5vw, 42px); }
     h2 {
-      margin: 42px 0 14px;
-      padding-top: 8px;
-      border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
-      font-size: clamp(22px, 4vw, 28px);
-      color: var(--accent-strong);
+      margin: 30px 0 15px;
+      padding: 0;
+      border-bottom: 2px solid var(--accent);
+      color: black;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+    h2 .heading-content {
+      display: inline-block;
+      margin-right: 3px;
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: bold;
+      padding: 3px 10px 1px;
+    }
+    h2::after {
+      display: inline-block;
+      vertical-align: bottom;
+      border-bottom: 36px solid #efebe9;
+      border-right: 20px solid transparent;
+      content: "";
     }
     h3 { margin: 30px 0 12px; font-size: 20px; }
-    p { margin: 0 0 18px; font-size: 17px; overflow-wrap: anywhere; word-break: break-word; }
+    p {
+      margin: 0;
+      color: black;
+      font-size: 16px;
+      line-height: 26px;
+      overflow-wrap: anywhere;
+      padding-bottom: 8px;
+      padding-top: 8px;
+      word-break: break-word;
+    }
     a { color: var(--accent-strong); text-decoration-thickness: 1px; text-underline-offset: 4px; }
     figure { margin: 28px -6px 34px; }
     figure img {

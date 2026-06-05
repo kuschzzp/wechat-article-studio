@@ -138,7 +138,7 @@ Skill 会引导 Agent：
 - 提供“复制当前样式”按钮，复制当前主题对应的公众号内联样式 HTML
 
 公众号富文本输出使用内联样式，因为微信编辑器可能会丢弃 class、外部 CSS 或部分 `<style>`。
-内置主题包括 `wechat-green`、`tech-comic`、`clean-white` 和 `ink-note`。`scripts/render-wechat.mjs` 支持用 `--theme` 指定主题，`preview.html` 会用同一套主题配置生成复制内容。
+当前内置主题是 `coral-tab`，来自一套黑色正文、珊瑚红章节标签、浅米色斜角尾巴的公众号样式。`scripts/render-wechat.mjs` 支持用 `--theme` 指定主题，`preview.html` 会用同一套主题配置生成复制内容。
 
 ## 参考链接格式
 

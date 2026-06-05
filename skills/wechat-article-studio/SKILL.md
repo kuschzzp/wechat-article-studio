@@ -99,7 +99,7 @@ preview.wechat.html
 
 10. 渲染公众号富文本。
    - 公众号富文本 HTML 也是固定流程的一部分，默认运行 `scripts/render-wechat.mjs`。
-   - 可用 `--theme` 指定主题，例如 `--theme tech-comic`。
+   - 可用 `--theme` 指定主题，例如 `--theme coral-tab`。
    - 主题配置集中在 `scripts/lib/wechat-themes.mjs`，预览页和公众号复制都使用同一份主题配置。
    - 微信公众号更容易保留内联样式，不要依赖 class、外部 CSS 或 `<style>`。
    - 第三方平台复制出来的 HTML 只能当样式样本，要清理无效 CSS，再转成稳定模板。
@@ -124,7 +124,7 @@ preview.wechat.html
 ```bash
 node _skills/wechat-article-studio/scripts/scaffold-article.mjs --title "文章标题" --slug short-topic
 node _skills/wechat-article-studio/scripts/upload-images.mjs 2026-06-05-short-topic --provider temppic
-node _skills/wechat-article-studio/scripts/render-wechat.mjs 2026-06-05-short-topic --theme tech-comic
+node _skills/wechat-article-studio/scripts/render-wechat.mjs 2026-06-05-short-topic --theme coral-tab
 node _skills/wechat-article-studio/scripts/build-preview.mjs 2026-06-05-short-topic
 node _skills/wechat-article-studio/scripts/check-article.mjs 2026-06-05-short-topic
 node _skills/wechat-article-studio/scripts/check-ai-flavor.mjs 2026-06-05-short-topic
