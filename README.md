@@ -32,7 +32,7 @@ It turns article creation into a structured package:
 - image-host manifest
 - AI-flavor writing checks
 
-The Skill is opinionated about process. It asks the agent to research first, draft with a human voice, design images before generating them, use Codex `image-gen` for all new illustrations, upload article images to a configurable image host by default, and generate a preview page that can copy both Markdown and WeChat-ready rich text.
+The Skill is opinionated about process. It asks the agent to research first, draft with a human voice, design images before generating them, use Codex `image-gen` for all new illustrations, generate images one at a time with no concurrent image requests, upload article images to a configurable image host by default, and generate a split preview workspace that can copy both Markdown and WeChat-ready rich text.
 
 If `image-gen` is not available in the current environment, the Skill must tell the user that images will not be generated. It should still create the image brief, but should not replace image generation with search results or another image tool.
 
@@ -101,13 +101,13 @@ The Skill will guide the agent to:
 2. Create one article folder.
 3. Write `writing-notes.md`.
 4. Plan comic-style illustrations in `image-brief.md`.
-5. Generate images with `image-gen` when available.
+5. Generate images with `image-gen` one at a time when available.
 6. Upload local article images to a configurable image host by default.
 7. Replace Markdown image paths with hosted URLs when upload succeeds.
 8. Write the publishable article in `article.md`.
 9. Run Chinese humanizer checks.
 10. Render `publish.wechat.html` with the selected theme.
-11. Generate `preview.html` with a style selector and current-theme copy button.
+11. Generate `preview.html` with a left Markdown source pane, right rendered preview pane, style selector, and current-theme copy button.
 12. Write `publish-checklist.md`.
 
 ## Image Generation And Hosting
@@ -117,6 +117,7 @@ All new article illustrations must be generated with the built-in `image-gen` to
 Default image behavior:
 
 - If `image-gen` is available, generate article images into `images/`.
+- Multiple images must be generated sequentially in the order listed in `image-brief.md`; do not call `image-gen` concurrently.
 - If `image-gen` is not available, tell the user and skip image generation.
 - After images are generated, upload them with `scripts/upload-images.mjs`.
 - The upload script writes `image-host-manifest.json`.
@@ -132,9 +133,10 @@ Every article should include a local `preview.html`.
 The preview page:
 
 - opens as a static local HTML file
-- renders the current Markdown snapshot
+- shows editable Markdown source on the left
+- renders the current Markdown on the right
 - provides a style dropdown for real-time Markdown and WeChat-copy style switching
-- provides a "Copy Markdown" button
+- provides a "Copy Markdown" button for the current source text
 - provides a "Copy Current Style" button that copies WeChat inline-style HTML for the selected theme
 
 WeChat rich-text output is generated as inline-style HTML because WeChat editors may strip classes, external CSS, and parts of `<style>`.
@@ -169,7 +171,7 @@ skills/wechat-article-studio/
     ├── scaffold-article.mjs         # Create an article folder
     ├── upload-images.mjs            # Upload local article images and rewrite Markdown URLs
     ├── render-wechat.mjs            # Render WeChat inline-style HTML
-    ├── build-preview.mjs            # Build preview.html with style switching
+    ├── build-preview.mjs            # Build split preview.html with style switching
     ├── check-article.mjs            # Validate article package
     ├── check-ai-flavor.mjs          # Scan AI-flavored writing patterns
     ├── image-hosts/                 # Pluggable image-host providers

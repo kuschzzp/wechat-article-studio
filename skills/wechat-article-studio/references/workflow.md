@@ -39,7 +39,7 @@
 - `article.md` 不是百科式介绍，而是从“AI 在代码里迷路”这个场景切入。
 - `image-brief.md` 先统一角色和风格，再拆 4 张图。
 - `publish-checklist.md` 不只列发布步骤，还提醒哪些事实要在发布当天刷新。
-- `preview.html` 是固定产物，让用户能在浏览器里检查 Markdown 排版、用下拉框切换样式，并复制正文或公众号排版。
+- `preview.html` 是固定产物，让用户能在浏览器里左侧查看 Markdown 源码、右侧检查渲染效果，用下拉框切换样式，并复制正文或公众号排版。
 - `AGENTS.md` 里的去 AI 味规则已经固化到 `references/humanizer-zh.md`，写正文和发布前检查都要读。
 
 ## 推荐文章结构
@@ -80,10 +80,12 @@
 
 10. 检查配图工具并上传图片。
    - 如果当前环境无法使用 `image-gen`，明确告诉用户不会生成文章配图，只保留 `image-brief.md`。
+   - 如果需要生成多张图，必须按 `image-brief.md` 的顺序串行生成：一张完成并保存后，再生成下一张。
+   - 禁止并发调用 `image-gen`。失败时只处理当前失败图片，不同时补跑后续图片。
    - 默认上传本地配图到图床，成功后把 `article.md` 图片路径替换成线上 URL。
    - 无图床可用时才保留 `images/...` 本地路径。
    - 按选定主题生成 `publish.wechat.html`。
-   - 生成 `preview.html`，并检查样式下拉框可以同时切换 Markdown 预览风格和公众号复制风格。
+   - 生成 `preview.html`，并检查左侧源码、右侧渲染预览、样式下拉框和两个复制按钮都能工作。
 
 ## `writing-notes.md` 模板
 
@@ -257,6 +259,7 @@
 - `image-brief.md` 有图片数量、文件名、提示词。
 - `publish-checklist.md` 有发布当天要刷新的事项。
 - `preview.html` 已生成。
+- `preview.html` 左侧是 Markdown 源码，右侧是渲染预览。
 - `preview.html` 有样式下拉框，可切换 Markdown 预览风格。
 - `preview.html` 的“复制当前样式”会复制当前主题的公众号内联 HTML。
 - 正文参考链接使用 `[说明](https://example.com/)`，没有裸 URL。

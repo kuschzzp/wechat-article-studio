@@ -11,8 +11,9 @@ The current Skill includes:
 - Chinese anti-AI-flavor writing rules adapted from the local `AGENTS.md`.
 - Comic-style image prompt guidance for technical articles.
 - A hard rule that new illustrations must use Codex `image-gen`.
+- A sequential image-generation rule: one image at a time, no concurrent `image-gen` calls.
 - A fallback rule that no article images are generated when `image-gen` is unavailable.
-- A local Markdown preview builder with style switching.
+- A local split Markdown preview builder with source editing, rendered preview, and style switching.
 - WeChat rich-text rendering with inline styles.
 - Temporary image-host upload with a pluggable provider interface.
 - Default Markdown image URL replacement after successful image upload.
@@ -93,7 +94,7 @@ This catalog should drive README tables, preview dropdown options, template rend
 
 ### v0.5: Preview App Upgrade
 
-- Add side-by-side Markdown and WeChat preview.
+- Add richer WeChat preview diagnostics.
 - Add template dropdown next to Markdown style dropdown.
 - Add warnings for local images, expired image URLs, and missing source links.
 - Keep the preview page static and dependency-free unless a real need appears.

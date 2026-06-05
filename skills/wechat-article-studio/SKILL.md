@@ -67,6 +67,8 @@ preview.wechat.html
 5. 生成图片。
    - 所有新配图必须使用内置 `image-gen` 工具生成。
    - 如果当前环境没有 `image-gen`，要提示用户并跳过实际配图生成；仍然要完成 `image-brief.md`。
+   - 调用 `image-gen` 时必须串行：先生成第 1 张，确认完成并保存文件后，再生成第 2 张。
+   - 禁止在同一轮或同一次工具调用里并发请求多张图。生成失败时只重试当前这一张，不跳到下一张并发补位。
    - 图片统一放进 `images/`。
    - 文件名稳定、带序号，例如 `01-cover-code-city.png`。
    - 图片尽量不要出现文字、logo、水印、伪代码小字。标题和说明放在正文里。
@@ -107,7 +109,9 @@ preview.wechat.html
 11. 生成预览页面。
    - 使用 `scripts/build-preview.mjs` 生成或更新 `preview.html`。
    - 预览页是固定产物，不是可选项。
-   - 页面必须能直接打开，提供“复制 Markdown”按钮。
+   - 页面必须能直接打开，左侧是 Markdown 源码，右侧是 Markdown 渲染后的样子。
+   - 左侧源码编辑后，右侧预览和复制内容要跟随当前源码刷新。
+   - 页面必须提供“复制 Markdown”按钮，复制左侧当前源码。
    - 页面顶部必须有样式下拉框，能实时切换 Markdown 预览风格。
    - “复制当前样式”必须复制当前下拉框对应的公众号内联样式 HTML，不能只切换本地 CSS。
 
@@ -133,7 +137,7 @@ node _skills/wechat-article-studio/scripts/check-ai-flavor.mjs 2026-06-05-short-
 脚本分工：
 
 - `scaffold-article.mjs`：创建文章目录和四个 Markdown 文件。
-- `build-preview.mjs`：从 `article.md` 生成本地 `preview.html`，页面支持下拉切换预览样式，并复制当前主题的公众号 HTML。
+- `build-preview.mjs`：从 `article.md` 生成本地 `preview.html`，左侧显示 Markdown 源码，右侧实时渲染预览，并复制当前主题的公众号 HTML。
 - `render-wechat.mjs`：把 `article.md` 转成公众号可复制的内联样式 HTML，支持 `--theme`。
 - `check-article.mjs`：检查文章目录是否完整，并检查参考链接是否使用标准 Markdown 链接。
 - `check-ai-flavor.mjs`：扫描正文里的 AI 味词、公式结构和发布稿风险。
