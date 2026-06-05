@@ -1,0 +1,7 @@
+interface:
+  display_name: "WeChat Article Studio"
+  short_description: "WeChat article workflow"
+  brand_color: "#35B378"
+  default_prompt: "Use $wechat-article-studio to write a WeChat Official Account article with research notes, image briefs, preview, and publishing checklist."
+policy:
+  allow_implicit_invocation: true

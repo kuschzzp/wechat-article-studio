@@ -1,0 +1,40 @@
+{
+  "name": "wechat-article-studio",
+  "version": "0.1.0",
+  "description": "An Agent Skill for writing, illustrating, previewing, and packaging WeChat Official Account articles.",
+  "author": {
+    "name": "kuschzzp",
+    "url": "https://github.com/kuschzzp"
+  },
+  "homepage": "https://github.com/kuschzzp/wechat-article-studio",
+  "repository": "https://github.com/kuschzzp/wechat-article-studio",
+  "license": "MIT",
+  "keywords": [
+    "wechat",
+    "article-writing",
+    "markdown-preview",
+    "image-generation",
+    "codex-skill"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "WeChat Article Studio",
+    "shortDescription": "WeChat article writing, images, preview, and publishing workflow",
+    "longDescription": "Use WeChat Article Studio to create complete WeChat Official Account article packages with research notes, publishable Markdown, comic-style image briefs, image-gen illustrations, image-host uploads, WeChat rich-text rendering, local preview pages, and publishing checks.",
+    "developerName": "kuschzzp",
+    "category": "Writing",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use wechat-article-studio to write a WeChat Official Account article with image briefs, preview, and publishing checklist.",
+      "Use wechat-article-studio to introduce this open-source project as a short comic-style technical article."
+    ],
+    "websiteURL": "https://github.com/kuschzzp/wechat-article-studio",
+    "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
+    "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+    "brandColor": "#35B378",
+    "screenshots": []
+  }
+}

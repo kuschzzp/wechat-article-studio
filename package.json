@@ -1,0 +1,38 @@
+{
+  "name": "wechat-article-studio",
+  "version": "0.1.0",
+  "description": "An Agent Skill for writing, illustrating, previewing, and packaging WeChat Official Account articles.",
+  "license": "MIT",
+  "type": "commonjs",
+  "skills": "./skills/",
+  "files": [
+    ".codex-plugin/",
+    "scripts/",
+    "skills/",
+    "README.md",
+    "README.zh-CN.md",
+    "ROADMAP.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "check": "node scripts/check-package.js",
+    "preview:serve": "node scripts/serve-preview.js",
+    "pack:dry": "npm pack --dry-run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kuschzzp/wechat-article-studio.git"
+  },
+  "keywords": [
+    "codex-skill",
+    "wechat",
+    "wechat-official-account",
+    "markdown",
+    "image-generation",
+    "article-writing",
+    "ai-writing"
+  ],
+  "engines": {
+    "node": ">=18"
+  }
+}
