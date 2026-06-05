@@ -1,4 +1,5 @@
 import path from "node:path";
+import { DEFAULT_WECHAT_THEME_ID, getWechatTheme } from "./wechat-themes.mjs";
 
 export function escapeHtml(value) {
   return String(value)
@@ -116,24 +117,26 @@ export function normalizeImagePath(src) {
   return src.split("#")[0].split("?")[0];
 }
 
-export function renderInline(text) {
+export function renderInline(text, options = {}) {
   const tokens = [];
   let rest = String(text);
   let codeIndex = 0;
+  const codeStyle = options.codeStyle ? ` style="${escapeAttribute(options.codeStyle)}"` : "";
+  const linkStyle = options.linkStyle ? ` style="${escapeAttribute(options.linkStyle)}"` : "";
 
   rest = rest.replace(/`([^`]+)`/g, (_, code) => {
     const key = `@@CODE_${codeIndex}@@`;
-    tokens.push({ key, html: `<code>${escapeHtml(code)}</code>` });
+    tokens.push({ key, html: `<code${codeStyle}>${escapeHtml(code)}</code>` });
     codeIndex += 1;
     return key;
   });
 
   rest = escapeHtml(rest);
   rest = rest.replace(/\[([^\]]+)]\((https?:\/\/[^)]+)\)/g, (_, label, url) => {
-    return `<a href="${escapeAttribute(url)}">${label}</a>`;
+    return `<a href="${escapeAttribute(url)}"${linkStyle}>${label}</a>`;
   });
   rest = rest.replace(/(^|[\s(])((https?:\/\/)[^\s<)]+)/g, (_, prefix, url) => {
-    return `${prefix}<a href="${escapeAttribute(url)}">${escapeHtml(url)}</a>`;
+    return `${prefix}<a href="${escapeAttribute(url)}"${linkStyle}>${escapeHtml(url)}</a>`;
   });
 
   for (const token of tokens) {
@@ -184,62 +187,51 @@ export function resolveImageSrc(src, articleDir, manifest) {
   return normalized;
 }
 
-const 微信样式 = {
-  root: "padding: 0 10px; line-height: 1.6; word-break: break-word; word-wrap: break-word; text-align: left; font-family: Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif; font-size: 15px; letter-spacing: 0.03em; color: #595959;",
-  h1: "margin: 1.2em 0 1em; padding: 0; font-weight: bold; color: #35b378; font-size: 24px; line-height: 1.35;",
-  h2: "margin: 1.2em 0 0.4em; padding: 0.45em 0; color: #35b378; font-weight: bold; font-size: 22px; line-height: 1.35;",
-  p: "font-size: 16px; padding-top: 8px; padding-bottom: 8px; line-height: 26px; color: #111; margin: 1em 4px;",
-  figure: "margin: 18px 0; display: flex; flex-direction: column; justify-content: center; align-items: center;",
-  img: "display: block; margin: 0 auto; max-width: 100%; border-radius: 4px;",
-  figcaption: "margin-top: 6px; text-align: center; color: #888; font-size: 14px; line-height: 1.5;",
-  ul: "margin-top: 8px; margin-bottom: 8px; padding-left: 25px; color: #111; list-style-type: disc;",
-  liSection: "margin: 8px 0; line-height: 26px; text-align: left; color: #111; font-weight: 500;",
-  code: "font-size: 14px; word-wrap: break-word; padding: 2px 4px; border-radius: 4px; margin: 0 2px; background-color: rgba(27,31,35,.05); font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; word-break: break-all; color: #35b378;",
-  pre: "margin: 12px 0; overflow-x: auto;",
-  preCode: "overflow-x: auto; padding: 16px; color: #333; background: #f8f8f8; display: block; font-family: Operator Mono, Consolas, Monaco, Menlo, monospace; border-radius: 0; font-size: 12px; line-height: 1.7; white-space: pre-wrap;",
-  quote: "margin: 14px 4px; padding: 10px 14px; border-left: 3px solid #35b378; background: rgba(53,179,120,0.08); color: #333; font-size: 16px; line-height: 26px;",
-};
-
-function renderWechatInline(text) {
-  return renderInline(text).replaceAll("<code>", `<code style="${微信样式.code}">`);
+function renderWechatInline(text, theme) {
+  return renderInline(text, {
+    codeStyle: theme.styles.code,
+    linkStyle: theme.styles.link,
+  });
 }
 
 export function renderWechatArticle(blocks, options = {}) {
   const articleDir = options.articleDir || "";
   const manifest = options.manifest || null;
+  const theme = getWechatTheme(options.themeId || DEFAULT_WECHAT_THEME_ID, { strict: Boolean(options.strictTheme) });
+  const 样式 = theme.styles;
   const html = blocks.map((block) => {
     if (block.type === "heading") {
       if (block.level === 1) {
-        return `<h1 data-tool="wechat-article-studio" style="${微信样式.h1}"><span>${renderWechatInline(block.text)}</span></h1>`;
+        return `<h1 data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.h1}"><span style="${样式.h1Span || ""}">${renderWechatInline(block.text, theme)}</span></h1>`;
       }
-      return `<h2 data-tool="wechat-article-studio" style="${微信样式.h2}"><span>${renderWechatInline(block.text)}</span></h2>`;
+      return `<h2 data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.h2}"><span style="${样式.h2Span || ""}">${renderWechatInline(block.text, theme)}</span></h2>`;
     }
     if (block.type === "paragraph") {
-      return `<p data-tool="wechat-article-studio" style="${微信样式.p}">${renderWechatInline(block.text)}</p>`;
+      return `<p data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.p}">${renderWechatInline(block.text, theme)}</p>`;
     }
     if (block.type === "image") {
       const src = resolveImageSrc(block.src, articleDir, manifest);
       return [
-        `<figure data-tool="wechat-article-studio" style="${微信样式.figure}">`,
-        `<img src="${escapeAttribute(src)}" alt="${escapeAttribute(block.alt)}" style="${微信样式.img}">`,
-        block.alt ? `<figcaption style="${微信样式.figcaption}">${escapeHtml(block.alt)}</figcaption>` : "",
+        `<figure data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.figure}">`,
+        `<img src="${escapeAttribute(src)}" alt="${escapeAttribute(block.alt)}" style="${样式.img}">`,
+        block.alt ? `<figcaption style="${样式.figcaption}">${escapeHtml(block.alt)}</figcaption>` : "",
         "</figure>",
       ].join("");
     }
     if (block.type === "list") {
       const items = block.items.map((item) => {
-        return `<li><section style="${微信样式.liSection}">${renderWechatInline(item)}</section></li>`;
+        return `<li><section style="${样式.liSection}">${renderWechatInline(item, theme)}</section></li>`;
       }).join("");
-      return `<ul data-tool="wechat-article-studio" style="${微信样式.ul}">${items}</ul>`;
+      return `<ul data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.ul}">${items}</ul>`;
     }
     if (block.type === "quote") {
-      return `<blockquote data-tool="wechat-article-studio" style="${微信样式.quote}">${block.text.split("\n").map(renderWechatInline).join("<br>")}</blockquote>`;
+      return `<blockquote data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.quote}">${block.text.split("\n").map((line) => renderWechatInline(line, theme)).join("<br>")}</blockquote>`;
     }
     if (block.type === "code") {
-      return `<pre data-tool="wechat-article-studio" style="${微信样式.pre}"><code style="${微信样式.preCode}">${escapeHtml(block.text)}</code></pre>`;
+      return `<pre data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.pre}"><code style="${样式.preCode}">${escapeHtml(block.text)}</code></pre>`;
     }
     return "";
   }).join("\n");
 
-  return `<section id="nice" data-tool="wechat-article-studio" style="${微信样式.root}">\n${html}\n</section>\n`;
+  return `<section id="nice" data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.root}">\n${html}\n</section>\n`;
 }

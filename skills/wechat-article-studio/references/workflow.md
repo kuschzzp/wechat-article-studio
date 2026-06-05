@@ -82,8 +82,8 @@
    - 如果当前环境无法使用 `image-gen`，明确告诉用户不会生成文章配图，只保留 `image-brief.md`。
    - 默认上传本地配图到图床，成功后把 `article.md` 图片路径替换成线上 URL。
    - 无图床可用时才保留 `images/...` 本地路径。
-   - 生成 `publish.wechat.html`。
-   - 生成 `preview.html`，并检查样式下拉框可以实时切换 Markdown 风格。
+   - 按选定主题生成 `publish.wechat.html`。
+   - 生成 `preview.html`，并检查样式下拉框可以同时切换 Markdown 预览风格和公众号复制风格。
 
 ## `writing-notes.md` 模板
 
@@ -177,9 +177,16 @@
 
 正文建议保留：
 
-- 官方来源：
-- 文档：
-- Release 或论文：
+- [官方来源：标题](https://example.com/)
+- [文档：标题](https://example.com/)
+- [Release 或论文：标题](https://example.com/)
+
+链接规则：
+
+- 正文和发布清单里的来源都使用 Markdown 标准链接。
+- 不写裸 URL，例如 `项目地址：https://example.com`。
+- URL 必须带 `https://` 或 `http://`。
+- `check-article.mjs` 会检查正文里的裸 URL 和缺少协议的 Markdown 链接。
 
 ## 风险表述
 
@@ -206,6 +213,8 @@
 - 首屏：
 - 代码块：
 - 图片说明：
+- 公众号主题：wechat-green / tech-comic / clean-white / ink-note
+- 复制检查：预览页切换主题后，点击“复制当前样式”，粘贴到公众号编辑器确认样式跟随变化。
 
 ## 图床与外链
 
@@ -249,6 +258,8 @@
 - `publish-checklist.md` 有发布当天要刷新的事项。
 - `preview.html` 已生成。
 - `preview.html` 有样式下拉框，可切换 Markdown 预览风格。
+- `preview.html` 的“复制当前样式”会复制当前主题的公众号内联 HTML。
+- 正文参考链接使用 `[说明](https://example.com/)`，没有裸 URL。
 - 正文引用的图片都存在。
 - 图片不少于 2 张。
 - 默认使用图床 URL；只有图床不可用时才使用本地图片路径。

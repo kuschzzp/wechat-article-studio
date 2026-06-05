@@ -29,6 +29,7 @@ const scriptFiles = [
   "skills/wechat-article-studio/scripts/check-ai-flavor.mjs",
   "skills/wechat-article-studio/scripts/lib/markdown.mjs",
   "skills/wechat-article-studio/scripts/lib/humanizer-zh.mjs",
+  "skills/wechat-article-studio/scripts/lib/wechat-themes.mjs",
   "skills/wechat-article-studio/scripts/image-hosts/index.mjs",
   "skills/wechat-article-studio/scripts/image-hosts/temppic.mjs"
 ];

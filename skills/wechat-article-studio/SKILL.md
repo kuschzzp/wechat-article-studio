@@ -83,6 +83,7 @@ preview.wechat.html
    - 允许有轻微吐槽和个人判断，但事实要有依据。
    - 默认使用图床 URL 引入图片，例如 `![封面图：说明](https://example.com/image.png)`。
    - 只有图床不可用时才使用本地路径，例如 `![封面图：说明](images/01-cover-code-city.png)`。
+   - 正文里的参考链接统一写成 `[说明](https://example.com/)`，不要写裸 URL，例如 `项目地址：https://example.com`。
 
 8. 做去 AI 味审稿。
    - 按 `references/humanizer-zh.md` 扫描正文。
@@ -93,11 +94,13 @@ preview.wechat.html
 
 9. 写发布注意事项。
    - 标题候选、摘要、封面图、图片清单、来源链接、发布前要刷新的事实、公众号编辑器注意点都写进 `publish-checklist.md`。
+   - 来源链接也必须使用 Markdown 标准链接格式，例如 `[官方文档：项目名](https://example.com/docs)`。
    - 如果使用临时图床，必须写明过期时间和发布前检查方式。
 
 10. 渲染公众号富文本。
    - 公众号富文本 HTML 也是固定流程的一部分，默认运行 `scripts/render-wechat.mjs`。
-   - 全局模板放在文章目录外，例如 `_templates/wechat/模板名/`。
+   - 可用 `--theme` 指定主题，例如 `--theme tech-comic`。
+   - 主题配置集中在 `scripts/lib/wechat-themes.mjs`，预览页和公众号复制都使用同一份主题配置。
    - 微信公众号更容易保留内联样式，不要依赖 class、外部 CSS 或 `<style>`。
    - 第三方平台复制出来的 HTML 只能当样式样本，要清理无效 CSS，再转成稳定模板。
 
@@ -106,7 +109,7 @@ preview.wechat.html
    - 预览页是固定产物，不是可选项。
    - 页面必须能直接打开，提供“复制 Markdown”按钮。
    - 页面顶部必须有样式下拉框，能实时切换 Markdown 预览风格。
-   - 因为上一步已经生成 `publish.wechat.html`，预览页还要提供“复制公众号排版”按钮。
+   - “复制当前样式”必须复制当前下拉框对应的公众号内联样式 HTML，不能只切换本地 CSS。
 
 12. 交付前检查。
     - 使用 `scripts/check-article.mjs`。
@@ -121,7 +124,7 @@ preview.wechat.html
 ```bash
 node _skills/wechat-article-studio/scripts/scaffold-article.mjs --title "文章标题" --slug short-topic
 node _skills/wechat-article-studio/scripts/upload-images.mjs 2026-06-05-short-topic --provider temppic
-node _skills/wechat-article-studio/scripts/render-wechat.mjs 2026-06-05-short-topic
+node _skills/wechat-article-studio/scripts/render-wechat.mjs 2026-06-05-short-topic --theme tech-comic
 node _skills/wechat-article-studio/scripts/build-preview.mjs 2026-06-05-short-topic
 node _skills/wechat-article-studio/scripts/check-article.mjs 2026-06-05-short-topic
 node _skills/wechat-article-studio/scripts/check-ai-flavor.mjs 2026-06-05-short-topic
@@ -130,9 +133,9 @@ node _skills/wechat-article-studio/scripts/check-ai-flavor.mjs 2026-06-05-short-
 脚本分工：
 
 - `scaffold-article.mjs`：创建文章目录和四个 Markdown 文件。
-- `build-preview.mjs`：从 `article.md` 生成本地 `preview.html`，页面支持下拉切换预览样式。
-- `render-wechat.mjs`：把 `article.md` 转成公众号可复制的内联样式 HTML。
-- `check-article.mjs`：检查文章目录是否完整。
+- `build-preview.mjs`：从 `article.md` 生成本地 `preview.html`，页面支持下拉切换预览样式，并复制当前主题的公众号 HTML。
+- `render-wechat.mjs`：把 `article.md` 转成公众号可复制的内联样式 HTML，支持 `--theme`。
+- `check-article.mjs`：检查文章目录是否完整，并检查参考链接是否使用标准 Markdown 链接。
 - `check-ai-flavor.mjs`：扫描正文里的 AI 味词、公式结构和发布稿风险。
 - `upload-images.mjs`：上传正文引用的本地图片，写入图床 manifest，并默认把 `article.md` 图片路径替换成线上 URL。
 - `image-hosts/temppic.mjs`：已验证过的临时图床 provider，正式使用前仍要重新验证。

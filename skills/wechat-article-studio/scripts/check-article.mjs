@@ -13,6 +13,7 @@ node scripts/check-article.mjs <文章目录>
   article.md 是否引用至少 2 张图片
   本地图片路径是否存在
   正文图片是否默认使用图床 URL
+  正文参考链接是否使用 [说明](https://...) 格式
   preview.html 中的 Markdown 快照是否和 article.md 一致
   article.md 是否有明显 AI 写作痕迹
 `);
@@ -52,6 +53,51 @@ async function readIfExists(filePath) {
   }
 }
 
+function maskFencedCode(markdownText) {
+  return markdownText.replace(/```[\s\S]*?```/g, (match) => " ".repeat(match.length));
+}
+
+function lineNumberAt(text, index) {
+  return text.slice(0, index).split("\n").length;
+}
+
+function markdownLinkRanges(text) {
+  const ranges = [];
+  const pattern = /!?\[[^\]]*]\((https?:\/\/[^)\s]+)(?:\s+"[^"]*")?\)/g;
+  let match;
+  while ((match = pattern.exec(text)) !== null) {
+    ranges.push([match.index, match.index + match[0].length]);
+  }
+  return ranges;
+}
+
+function isInsideRange(index, ranges) {
+  return ranges.some(([start, end]) => index >= start && index < end);
+}
+
+function findLinkFormatIssues(markdownText) {
+  const masked = maskFencedCode(markdownText);
+  const ranges = markdownLinkRanges(masked);
+  const issues = [];
+  const nakedUrlPattern = /https?:\/\/[^\s<>)]+/g;
+  let match;
+  while ((match = nakedUrlPattern.exec(masked)) !== null) {
+    if (isInsideRange(match.index, ranges)) continue;
+    issues.push(`第 ${lineNumberAt(masked, match.index)} 行发现裸 URL，请改成 [说明](${match[0]}) 格式。`);
+  }
+
+  const markdownLinkPattern = /\[[^\]]+]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
+  while ((match = markdownLinkPattern.exec(masked)) !== null) {
+    if (masked[match.index - 1] === "!") continue;
+    const url = match[1];
+    if (!/^https?:\/\//i.test(url)) {
+      issues.push(`第 ${lineNumberAt(masked, match.index)} 行链接缺少 http/https 协议：${match[0]}`);
+    }
+  }
+
+  return issues;
+}
+
 for (const file of 必备文件) {
   if (!(await exists(path.join(articleDir, file)))) {
     错误.push(`缺少必备文件：${file}`);
@@ -62,6 +108,11 @@ const articlePath = path.join(articleDir, "article.md");
 const markdown = await readIfExists(articlePath);
 if (!markdown.trim()) {
   错误.push("article.md 为空。");
+}
+
+const linkFormatIssues = findLinkFormatIssues(markdown);
+for (const issue of linkFormatIssues) {
+  错误.push(issue);
 }
 
 const humanizerFindings = scanHumanizer(markdown);

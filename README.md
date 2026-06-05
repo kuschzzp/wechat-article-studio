@@ -106,8 +106,8 @@ The Skill will guide the agent to:
 7. Replace Markdown image paths with hosted URLs when upload succeeds.
 8. Write the publishable article in `article.md`.
 9. Run Chinese humanizer checks.
-10. Render `publish.wechat.html`.
-11. Generate `preview.html` with a style selector and copy buttons.
+10. Render `publish.wechat.html` with the selected theme.
+11. Generate `preview.html` with a style selector and current-theme copy button.
 12. Write `publish-checklist.md`.
 
 ## Image Generation And Hosting
@@ -133,11 +133,23 @@ The preview page:
 
 - opens as a static local HTML file
 - renders the current Markdown snapshot
-- provides a style dropdown for real-time Markdown preview switching
+- provides a style dropdown for real-time Markdown and WeChat-copy style switching
 - provides a "Copy Markdown" button
-- provides a "Copy WeChat Layout" button after `publish.wechat.html` exists
+- provides a "Copy Current Style" button that copies WeChat inline-style HTML for the selected theme
 
 WeChat rich-text output is generated as inline-style HTML because WeChat editors may strip classes, external CSS, and parts of `<style>`.
+Bundled themes include `wechat-green`, `tech-comic`, `clean-white`, and `ink-note`. `scripts/render-wechat.mjs` supports `--theme`, and `preview.html` uses the same theme definitions for copied WeChat HTML.
+
+## Reference Link Format
+
+Source links in articles and publish checklists should use standard Markdown links:
+
+```markdown
+- [GitHub repository: project name](https://github.com/example/project)
+- [Official docs: project name](https://example.com/docs)
+```
+
+Avoid naked URLs such as `Project URL: https://example.com`. `scripts/check-article.mjs` checks for this.
 
 ## What Is Included?
 
@@ -161,7 +173,7 @@ skills/wechat-article-studio/
     ├── check-article.mjs            # Validate article package
     ├── check-ai-flavor.mjs          # Scan AI-flavored writing patterns
     ├── image-hosts/                 # Pluggable image-host providers
-    └── lib/                         # Shared Markdown and humanizer helpers
+    └── lib/                         # Shared Markdown, theme, and humanizer helpers
 ```
 
 ## Core Article Folder

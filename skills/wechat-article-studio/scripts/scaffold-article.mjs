@@ -233,9 +233,11 @@ image-gen 提示词：
 
 ## 链接
 
-- 官方来源：
-- 文档：
-- Release 或论文：
+- [官方来源：标题](https://example.com/)
+- [文档：标题](https://example.com/)
+- [Release 或论文：标题](https://example.com/)
+
+链接规则：使用 Markdown 标准链接，不写裸 URL。
 
 ## 风险表述
 

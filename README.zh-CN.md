@@ -106,8 +106,8 @@ Skill 会引导 Agent：
 7. 上传成功后，把正文图片路径替换成线上 URL。
 8. 写 `article.md` 发布稿。
 9. 做中文去 AI 味检查。
-10. 渲染 `publish.wechat.html`。
-11. 生成带样式下拉框和复制按钮的 `preview.html`。
+10. 按所选主题渲染 `publish.wechat.html`。
+11. 生成带样式下拉框和复制当前样式按钮的 `preview.html`。
 12. 写 `publish-checklist.md`。
 
 ## 图片生成与托管
@@ -133,11 +133,23 @@ Skill 会引导 Agent：
 
 - 作为静态 HTML 本地打开
 - 渲染当前 Markdown 快照
-- 提供样式下拉框，实时切换 Markdown 预览风格
+- 提供样式下拉框，实时切换 Markdown 预览风格和公众号复制风格
 - 提供“复制 Markdown”按钮
-- 在 `publish.wechat.html` 存在时提供“复制公众号排版”按钮
+- 提供“复制当前样式”按钮，复制当前主题对应的公众号内联样式 HTML
 
 公众号富文本输出使用内联样式，因为微信编辑器可能会丢弃 class、外部 CSS 或部分 `<style>`。
+内置主题包括 `wechat-green`、`tech-comic`、`clean-white` 和 `ink-note`。`scripts/render-wechat.mjs` 支持用 `--theme` 指定主题，`preview.html` 会用同一套主题配置生成复制内容。
+
+## 参考链接格式
+
+正文和发布清单里的资料来源统一使用标准 Markdown 链接：
+
+```markdown
+- [GitHub 仓库：项目名](https://github.com/example/project)
+- [官方文档：项目名](https://example.com/docs)
+```
+
+不要写裸 URL，例如 `项目地址：https://example.com`。`scripts/check-article.mjs` 会检查这类问题。
 
 ## 包含什么？
 
@@ -161,7 +173,7 @@ skills/wechat-article-studio/
     ├── check-article.mjs            # 检查文章包完整性
     ├── check-ai-flavor.mjs          # 扫描 AI 写作痕迹
     ├── image-hosts/                 # 可插拔图片托管 provider
-    └── lib/                         # Markdown 和 humanizer 工具
+    └── lib/                         # Markdown、主题和 humanizer 工具
 ```
 
 ## 单篇文章目录
