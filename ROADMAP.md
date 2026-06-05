@@ -15,6 +15,7 @@ The current Skill includes:
 - A fallback rule that no article images are generated when `image-gen` is unavailable.
 - A local split Markdown preview builder with source editing, rendered preview, and style switching.
 - WeChat rich-text rendering with inline styles.
+- Three bundled WeChat themes: coral tab, minimal black, and blue grid.
 - Temporary image-host upload with a pluggable provider interface.
 - Default Markdown image URL replacement after successful image upload.
 - Article package checks and AI-flavor scans.

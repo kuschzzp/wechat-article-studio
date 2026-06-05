@@ -207,7 +207,7 @@ export function renderWechatArticle(blocks, options = {}) {
       if (block.level === 1) {
         return `<h1 data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.h1}"><span style="${样式.h1Span || ""}">${renderWechatInline(block.text, theme)}</span></h1>`;
       }
-      return `<h2 data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.h2}"><span style="${样式.h2Span || ""}">${renderWechatInline(block.text, theme)}</span>${样式.h2Suffix || ""}</h2>`;
+      return `<h2 data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.h2}">${样式.h2Prefix || ""}<span style="${样式.h2Span || ""}">${renderWechatInline(block.text, theme)}</span>${样式.h2Suffix || ""}</h2>`;
     }
     if (block.type === "paragraph") {
       return `<p data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.p}">${renderWechatInline(block.text, theme)}</p>`;

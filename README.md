@@ -118,6 +118,7 @@ Default image behavior:
 
 - If `image-gen` is available, generate article images into `images/`.
 - Multiple images must be generated sequentially in the order listed in `image-brief.md`; do not call `image-gen` concurrently.
+- Image text should be context-aware and restrained: short titles, signs, button labels, speech-bubble words, or diagram labels are acceptable, while long or exact copy should stay in the article body or be added later.
 - If `image-gen` is not available, tell the user and skip image generation.
 - After images are generated, upload them with `scripts/upload-images.mjs`.
 - The upload script writes `image-host-manifest.json`.
@@ -140,7 +141,9 @@ The preview page:
 - provides a "Copy Current Style" button that copies WeChat inline-style HTML for the selected theme
 
 WeChat rich-text output is generated as inline-style HTML because WeChat editors may strip classes, external CSS, and parts of `<style>`.
-The bundled theme is `coral-tab`, a WeChat style with black body text, coral section labels, and a pale angled tab. `scripts/render-wechat.mjs` supports `--theme`, and `preview.html` uses the same theme definitions for copied WeChat HTML.
+The bundled themes are `coral-tab`, `minimal-black`, and `blue-grid`; `coral-tab` remains the default. `scripts/render-wechat.mjs` supports `--theme`, and `preview.html` uses the same theme definitions for copied WeChat HTML.
+
+After finishing an article package, the Skill response should explain what each main file is for so the author knows which files support writing, previewing, copying, image hosting, and publish checks.
 
 ## Reference Link Format
 

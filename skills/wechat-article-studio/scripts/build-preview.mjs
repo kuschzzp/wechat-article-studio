@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from "node:fs/promises";
 import path from "node:path";
-import { parseMarkdown, extractTitle, renderPreviewArticle, escapeHtml, escapeAttribute } from "./lib/markdown.mjs";
+import { parseMarkdown, extractTitle, renderWechatArticle, escapeHtml, escapeAttribute } from "./lib/markdown.mjs";
 import { DEFAULT_WECHAT_THEME_ID, getPreviewThemeOptions, listWechatThemes } from "./lib/wechat-themes.mjs";
 
 function 帮助() {
@@ -66,7 +66,6 @@ try {
   const manifest = await readManifest();
   const blocks = parseMarkdown(markdown);
   const title = extractTitle(blocks, "文章预览");
-  const articleHtml = renderPreviewArticle(blocks);
   const themes = getPreviewThemeOptions();
   const themeDefinitions = listWechatThemes().map((theme) => ({
     id: theme.id,
@@ -76,6 +75,7 @@ try {
     styles: theme.styles,
   }));
   const defaultTheme = themes.find((theme) => theme.id === DEFAULT_WECHAT_THEME_ID) || themes[0];
+  const articleHtml = renderWechatArticle(blocks, { articleDir, manifest, themeId: defaultTheme.id, strictTheme: true });
   const themeCss = themes.map((theme) => {
     return `body[data-preview-style="${escapeAttribute(theme.id)}"] {\n      ${cssVariables(theme)}\n    }`;
   }).join("\n    ");
@@ -114,7 +114,7 @@ try {
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      padding: 12px clamp(14px, 3vw, 32px);
+      padding: 10px 12px;
       border-bottom: 1px solid var(--line);
       background: color-mix(in srgb, var(--paper) 93%, transparent);
       backdrop-filter: blur(14px);
@@ -203,11 +203,11 @@ try {
     }
     .studio-shell {
       display: grid;
-      grid-template-columns: minmax(320px, 0.92fr) minmax(360px, 1.08fr);
-      gap: 16px;
-      width: min(100%, 1440px);
-      margin: 16px auto 54px;
-      padding: 0 16px;
+      grid-template-columns: minmax(360px, 1fr) minmax(360px, 1fr);
+      gap: 8px;
+      width: 100%;
+      margin: 8px 0 36px;
+      padding: 0 6px;
       align-items: start;
     }
     .pane {
@@ -266,7 +266,9 @@ try {
       line-height: 1.65;
       padding: 18px;
       tab-size: 2;
+      overflow-wrap: anywhere;
       white-space: pre-wrap;
+      word-break: break-all;
     }
     .preview-pane {
       background: color-mix(in srgb, var(--paper) 96%, #fff);
@@ -279,7 +281,7 @@ try {
     }
     .content {
       overflow-wrap: anywhere;
-      padding: clamp(22px, 4vw, 48px);
+      padding: clamp(12px, 1.6vw, 24px);
       word-break: break-word;
     }
     h1, h2, h3 { line-height: 1.28; letter-spacing: 0; }
@@ -305,13 +307,6 @@ try {
       color: #ffffff;
       font-weight: bold;
       padding: 3px 10px 1px;
-    }
-    h2::after {
-      display: inline-block;
-      vertical-align: bottom;
-      border-bottom: 36px solid #efebe9;
-      border-right: 20px solid transparent;
-      content: "";
     }
     h3 {
       margin: 30px 0 12px;
@@ -442,7 +437,7 @@ try {
       .studio-shell {
         grid-template-columns: 1fr;
         margin-top: 12px;
-        padding: 0 10px 36px;
+        padding: 0 8px 36px;
       }
       .source-pane {
         position: static;
@@ -457,7 +452,7 @@ try {
         min-height: 0;
       }
       .content {
-        padding: 22px 16px 32px;
+        padding: 16px 10px 28px;
       }
     }
     @media (max-width: 560px) {
@@ -505,7 +500,7 @@ try {
         <span id="source-meta">${markdown.length} 字 / ${initialLineCount} 行</span>
       </div>
       <div class="source-wrap">
-        <textarea id="markdown-editor" spellcheck="false" aria-label="Markdown 源码">${escapeHtml(markdown)}</textarea>
+        <textarea id="markdown-editor" spellcheck="false" wrap="hard" aria-label="Markdown 源码">${escapeHtml(markdown)}</textarea>
       </div>
     </section>
     <section class="pane preview-pane" aria-label="Markdown 渲染预览">
@@ -715,7 +710,7 @@ ${articleHtml}
           if (block.level === 1) {
             return "<h1" + dataAttrs(theme) + styleAttr(s.h1) + "><span" + styleAttr(s.h1Span || "") + ">" + renderWechatInline(block.text, theme) + "</span></h1>";
           }
-          return "<h2" + dataAttrs(theme) + styleAttr(s.h2) + "><span" + styleAttr(s.h2Span || "") + ">" + renderWechatInline(block.text, theme) + "</span>" + (s.h2Suffix || "") + "</h2>";
+          return "<h2" + dataAttrs(theme) + styleAttr(s.h2) + ">" + (s.h2Prefix || "") + "<span" + styleAttr(s.h2Span || "") + ">" + renderWechatInline(block.text, theme) + "</span>" + (s.h2Suffix || "") + "</h2>";
         }
         if (block.type === "paragraph") {
           return "<p" + dataAttrs(theme) + styleAttr(s.p) + ">" + renderWechatInline(block.text, theme) + "</p>";
@@ -754,7 +749,7 @@ ${articleHtml}
       sourceMeta.textContent = text.length + " 字 / " + lines + " 行";
     }
     function renderNow() {
-      previewContent.innerHTML = renderPreviewArticle(parseMarkdown(editor.value));
+      previewContent.innerHTML = renderWechatArticle(parseMarkdown(editor.value), currentTheme());
       updateMeta();
     }
     function setStatus(text, delay) {
@@ -782,6 +777,7 @@ ${articleHtml}
     renderNow();
     styleSelect.addEventListener("change", function() {
       applyPreviewStyle(styleSelect.value);
+      renderNow();
       setStatus("已切换样式", 1200);
     });
     editor.addEventListener("input", function() {

@@ -118,6 +118,7 @@ Skill 会引导 Agent：
 
 - 如果 `image-gen` 可用，生成图片到 `images/`。
 - 多张图片必须按 `image-brief.md` 的顺序一张一张生成，禁止在同一轮里并发调用 `image-gen`。
+- 图片文字按上下文克制使用：可以有短标题、标牌、按钮词、气泡词或图解标签，但长文案和精确文字优先放正文或后期叠字。
 - 如果 `image-gen` 不可用，告诉用户并跳过图片生成。
 - 图片生成后，运行 `scripts/upload-images.mjs` 上传。
 - 上传脚本写入 `image-host-manifest.json`。
@@ -140,7 +141,9 @@ Skill 会引导 Agent：
 - 提供“复制当前样式”按钮，复制当前主题对应的公众号内联样式 HTML
 
 公众号富文本输出使用内联样式，因为微信编辑器可能会丢弃 class、外部 CSS 或部分 `<style>`。
-当前内置主题是 `coral-tab`，来自一套黑色正文、珊瑚红章节标签、浅米色斜角尾巴的公众号样式。`scripts/render-wechat.mjs` 支持用 `--theme` 指定主题，`preview.html` 会用同一套主题配置生成复制内容。
+当前内置主题包括 `coral-tab`、`minimal-black` 和 `blue-grid`，默认仍然使用 `coral-tab`。`scripts/render-wechat.mjs` 支持用 `--theme` 指定主题，`preview.html` 会用同一套主题配置生成复制内容。
+
+完成一篇文章后，Skill 的交付回复会说明每个主要文件的作用，方便作者知道哪些文件用于写作、预览、复制、图床追踪和发布检查。
 
 ## 参考链接格式
 

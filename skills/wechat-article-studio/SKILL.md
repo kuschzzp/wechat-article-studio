@@ -71,7 +71,8 @@ preview.wechat.html
    - 禁止在同一轮或同一次工具调用里并发请求多张图。生成失败时只重试当前这一张，不跳到下一张并发补位。
    - 图片统一放进 `images/`。
    - 文件名稳定、带序号，例如 `01-cover-code-city.png`。
-   - 图片尽量不要出现文字、logo、水印、伪代码小字。标题和说明放在正文里。
+   - 图片默认不强塞文字；根据文章上下文可以克制使用短标题、标牌、按钮词、气泡词或图解标签。
+   - 精确长文案优先放正文或后期叠字，不交给 image-gen 硬生成；避免 logo、水印、品牌名、伪代码和密集小字。
 
 6. 默认上传图片到图床。
    - 图片生成后默认运行 `scripts/upload-images.mjs` 上传正文引用的本地图片。
@@ -101,7 +102,7 @@ preview.wechat.html
 
 10. 渲染公众号富文本。
    - 公众号富文本 HTML 也是固定流程的一部分，默认运行 `scripts/render-wechat.mjs`。
-   - 可用 `--theme` 指定主题，例如 `--theme coral-tab`。
+   - 可用 `--theme` 指定主题，例如 `--theme coral-tab`、`--theme minimal-black`、`--theme blue-grid`。
    - 主题配置集中在 `scripts/lib/wechat-themes.mjs`，预览页和公众号复制都使用同一份主题配置。
    - 微信公众号更容易保留内联样式，不要依赖 class、外部 CSS 或 `<style>`。
    - 第三方平台复制出来的 HTML 只能当样式样本，要清理无效 CSS，再转成稳定模板。
@@ -174,6 +175,7 @@ node _skills/wechat-article-studio/scripts/check-ai-flavor.mjs 2026-06-05-short-
 
 - 文章目录在哪里。
 - 创建或更新了哪些文件。
+- 逐个说明主要产物文件的作用：`writing-notes.md`、`article.md`、`publish-checklist.md`、`image-brief.md`、`images/`、`preview.html`、`publish.wechat.html`、`image-host-manifest.json`。
 - 生成了几张图。
 - 如果当前环境没有 `image-gen`，明确说明没有生成配图。
 - 做过哪些检查。
