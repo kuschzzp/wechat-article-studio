@@ -4,7 +4,7 @@
 
 **An Agent Skill for writing, illustrating, previewing, and packaging WeChat Official Account articles.**
 
-Build technical explainers, AI news posts, and short comic-style WeChat articles with a repeatable folder workflow, image briefs, generated illustrations, Markdown preview, WeChat rich-text rendering, temporary image hosting, and pre-publish checks.
+Build technical explainers, AI news posts, and short comic-style WeChat articles with a repeatable folder workflow, image briefs, generated illustrations, Markdown preview, WeChat rich-text rendering, image hosting, and pre-publish checks.
 
 [简体中文](./README.zh-CN.md) · [Roadmap](./ROADMAP.md) · [Skill Entry](./skills/wechat-article-studio/SKILL.md) · [Preview Shell](./skills/wechat-article-studio/assets/previews/index.html) · [Workflow](./skills/wechat-article-studio/references/workflow.md)
 
@@ -29,10 +29,10 @@ It turns article creation into a structured package:
 - generated comic-style images
 - local preview page with style switching
 - WeChat rich-text HTML
-- temporary image-host manifest
+- image-host manifest
 - AI-flavor writing checks
 
-The Skill is opinionated about process. It asks the agent to research first, draft with a human voice, design images before generating them, use Codex `image-gen` for all new illustrations, upload article images to an image host by default, and generate a preview page that can copy both Markdown and WeChat-ready rich text.
+The Skill is opinionated about process. It asks the agent to research first, draft with a human voice, design images before generating them, use Codex `image-gen` for all new illustrations, upload article images to a configurable image host by default, and generate a preview page that can copy both Markdown and WeChat-ready rich text.
 
 If `image-gen` is not available in the current environment, the Skill must tell the user that images will not be generated. It should still create the image brief, but should not replace image generation with search results or another image tool.
 
@@ -102,7 +102,7 @@ The Skill will guide the agent to:
 3. Write `writing-notes.md`.
 4. Plan comic-style illustrations in `image-brief.md`.
 5. Generate images with `image-gen` when available.
-6. Upload local article images to a temporary image host by default.
+6. Upload local article images to a configurable image host by default.
 7. Replace Markdown image paths with hosted URLs when upload succeeds.
 8. Write the publishable article in `article.md`.
 9. Run Chinese humanizer checks.
@@ -123,7 +123,7 @@ Default image behavior:
 - By default, the upload script rewrites `article.md` image paths to hosted URLs.
 - Local `images/...` paths are a fallback only when no image host is available.
 
-The bundled temporary provider is `temppic.sinancode.com`. Temporary image hosts can fail or expire, so publish checklists should record expiration and re-check instructions.
+The bundled provider is `temppic.sinancode.com`, mainly for demonstrating and testing the upload flow. For production publishing, you can replace it or add a more durable provider; per-article link checks are handled in `publish-checklist.md`.
 
 ## Preview And WeChat Rendering
 

@@ -4,7 +4,7 @@
 
 **用于创作、配图、预览和打包微信公众号文章的 Agent Skill。**
 
-它面向技术科普、AI 资讯、开源项目介绍和短漫画风格公众号文章，固化一套从资料核对、正文写作、配图设计、image-gen 生成、图床上传、公众号排版到发布检查的流程。
+它面向技术科普、AI 资讯、开源项目介绍和短漫画风格公众号文章，固化一套从资料核对、正文写作、配图设计、image-gen 生成、图片托管、公众号排版到发布检查的流程。
 
 [English](./README.md) · [Roadmap](./ROADMAP.md) · [Skill 入口](./skills/wechat-article-studio/SKILL.md) · [预览壳](./skills/wechat-article-studio/assets/previews/index.html) · [工作流](./skills/wechat-article-studio/references/workflow.md)
 
@@ -29,10 +29,10 @@
 - 漫画风格生成图
 - 本地预览页
 - 公众号富文本 HTML
-- 临时图床 manifest
+- 图片托管 manifest
 - 去 AI 味检查结果
 
-它的流程比较明确：先查资料，再定文章角度；先写配图方案，再生成图片；所有新配图都必须使用 Codex 自带的 `image-gen`；图片默认上传图床，正文默认使用线上 URL；最后生成可切换样式的本地预览页和公众号可复制 HTML。
+它的流程比较明确：先查资料，再定文章角度；先写配图方案，再生成图片；所有新配图都必须使用 Codex 自带的 `image-gen`；图片默认上传到可配置的托管服务，正文默认使用线上 URL；最后生成可切换样式的本地预览页和公众号可复制 HTML。
 
 如果当前环境没有 `image-gen`，Skill 必须告诉用户“当前无法使用 image-gen，因此不会生成文章配图”。这时只写 `image-brief.md`，不使用图片搜索或其他生成工具替代。
 
@@ -102,7 +102,7 @@ Skill 会引导 Agent：
 3. 写 `writing-notes.md`。
 4. 在 `image-brief.md` 里规划漫画风格配图。
 5. 在可用时用 `image-gen` 生成图片。
-6. 默认把本地图片上传到临时图床。
+6. 默认把本地图片上传到可配置的图片托管服务。
 7. 上传成功后，把正文图片路径替换成线上 URL。
 8. 写 `article.md` 发布稿。
 9. 做中文去 AI 味检查。
@@ -110,7 +110,7 @@ Skill 会引导 Agent：
 11. 生成带样式下拉框和复制按钮的 `preview.html`。
 12. 写 `publish-checklist.md`。
 
-## 图片生成与图床
+## 图片生成与托管
 
 所有新配图都必须使用内置 `image-gen` 工具生成。这样图片来源可追踪，也能避免混入没有记录的网络图片。
 
@@ -121,9 +121,9 @@ Skill 会引导 Agent：
 - 图片生成后，运行 `scripts/upload-images.mjs` 上传。
 - 上传脚本写入 `image-host-manifest.json`。
 - 上传脚本默认把 `article.md` 里的本地图片路径替换成线上 URL。
-- 只有没有可用图床时，才保留 `images/...` 本地路径。
+- 只有没有可用托管服务时，才保留 `images/...` 本地路径。
 
-当前内置临时图床 provider 是 `temppic.sinancode.com`。临时图床可能失效或过期，所以发布清单里要写明过期时间和发布前复查方式。
+当前内置 provider 是 `temppic.sinancode.com`，用于演示和调试图片上传流程。正式发布时，可以替换或新增更稳定的 provider；单篇文章的外链检查细节由 Skill 写入 `publish-checklist.md`。
 
 ## 预览与公众号排版
 
@@ -160,7 +160,7 @@ skills/wechat-article-studio/
     ├── build-preview.mjs            # 生成可切换样式的 preview.html
     ├── check-article.mjs            # 检查文章包完整性
     ├── check-ai-flavor.mjs          # 扫描 AI 写作痕迹
-    ├── image-hosts/                 # 可插拔图床 provider
+    ├── image-hosts/                 # 可插拔图片托管 provider
     └── lib/                         # Markdown 和 humanizer 工具
 ```
 
