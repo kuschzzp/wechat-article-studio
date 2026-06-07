@@ -121,6 +121,7 @@ export function renderInline(text, options = {}) {
   const tokens = [];
   let rest = String(text);
   let codeIndex = 0;
+  const linkMode = options.linkMode || "text";
   const codeStyle = options.codeStyle ? ` style="${escapeAttribute(options.codeStyle)}"` : "";
   const linkStyle = options.linkStyle ? ` style="${escapeAttribute(options.linkStyle)}"` : "";
 
@@ -133,11 +134,14 @@ export function renderInline(text, options = {}) {
 
   rest = escapeHtml(rest);
   rest = rest.replace(/\[([^\]]+)]\((https?:\/\/[^)]+)\)/g, (_, label, url) => {
+    if (linkMode === "text") return `${label}：${url}`;
     return `<a href="${escapeAttribute(url)}"${linkStyle}>${label}</a>`;
   });
-  rest = rest.replace(/(^|[\s(])((https?:\/\/)[^\s<)]+)/g, (_, prefix, url) => {
-    return `${prefix}<a href="${escapeAttribute(url)}"${linkStyle}>${escapeHtml(url)}</a>`;
-  });
+  if (linkMode === "anchor") {
+    rest = rest.replace(/(^|[\s(])((https?:\/\/)[^\s<)]+)/g, (_, prefix, url) => {
+      return `${prefix}<a href="${escapeAttribute(url)}"${linkStyle}>${escapeHtml(url)}</a>`;
+    });
+  }
 
   for (const token of tokens) {
     rest = rest.replace(token.key, token.html);
@@ -162,7 +166,6 @@ export function renderPreviewArticle(blocks) {
       return [
         "<figure>",
         `<img src="${escapeAttribute(block.src)}" alt="${escapeAttribute(block.alt)}">`,
-        block.alt ? `<figcaption>${escapeHtml(block.alt)}</figcaption>` : "",
         "</figure>",
       ].join("");
     }
@@ -194,6 +197,7 @@ function renderWechatInline(text, theme) {
   return renderInline(text, {
     codeStyle: theme.styles.code,
     linkStyle: theme.styles.link,
+    linkMode: "text",
   });
 }
 
@@ -217,7 +221,6 @@ export function renderWechatArticle(blocks, options = {}) {
       return [
         `<figure data-tool="wechat-article-studio" data-theme="${escapeAttribute(theme.id)}" style="${样式.figure}">`,
         `<img src="${escapeAttribute(src)}" alt="${escapeAttribute(block.alt)}" style="${样式.img}">`,
-        block.alt ? `<figcaption style="${样式.figcaption}">${escapeHtml(block.alt)}</figcaption>` : "",
         "</figure>",
       ].join("");
     }

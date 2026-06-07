@@ -341,13 +341,6 @@ try {
       margin: 0 auto;
       background: #eee4d4;
     }
-    figcaption {
-      margin-top: 5px;
-      color: #888;
-      font-size: 14px;
-      line-height: 1.5;
-      text-align: center;
-    }
     ul {
       margin: 8px 0;
       padding-left: 25px;
@@ -630,6 +623,7 @@ ${articleHtml}
       var tokens = [];
       var rest = String(text == null ? "" : text);
       var codeIndex = 0;
+      var linkMode = options.linkMode || "text";
       var codeStyle = options.codeStyle ? styleAttr(options.codeStyle) : "";
       var linkStyle = options.linkStyle ? styleAttr(options.linkStyle) : "";
       rest = rest.replace(new RegExp(INLINE_CODE_MARK + "([^" + INLINE_CODE_MARK + "]+)" + INLINE_CODE_MARK, "g"), function(_, code) {
@@ -640,11 +634,14 @@ ${articleHtml}
       });
       rest = escapeHtml(rest);
       rest = rest.replace(/\\[([^\\]]+)]\\((https?:\\/\\/[^)]+)\\)/g, function(_, label, url) {
+        if (linkMode === "text") return label + "：" + url;
         return '<a href="' + escapeAttr(url) + '"' + linkStyle + ">" + label + "</a>";
       });
-      rest = rest.replace(/(^|[\\s(])((https?:\\/\\/)[^\\s<)]+)/g, function(_, prefix, url) {
-        return prefix + '<a href="' + escapeAttr(url) + '"' + linkStyle + ">" + escapeHtml(url) + "</a>";
-      });
+      if (linkMode === "anchor") {
+        rest = rest.replace(/(^|[\\s(])((https?:\\/\\/)[^\\s<)]+)/g, function(_, prefix, url) {
+          return prefix + '<a href="' + escapeAttr(url) + '"' + linkStyle + ">" + escapeHtml(url) + "</a>";
+        });
+      }
       tokens.forEach(function(token) {
         rest = rest.replace(token.key, token.html);
       });
@@ -666,7 +663,6 @@ ${articleHtml}
           return [
             "<figure>",
             '<img src="' + escapeAttr(block.src) + '" alt="' + escapeAttr(block.alt) + '">',
-            block.alt ? "<figcaption>" + escapeHtml(block.alt) + "</figcaption>" : "",
             "</figure>"
           ].join("");
         }
@@ -700,7 +696,8 @@ ${articleHtml}
     function renderWechatInline(text, theme) {
       return renderInline(text, {
         codeStyle: theme.styles.code,
-        linkStyle: theme.styles.link
+        linkStyle: theme.styles.link,
+        linkMode: "text"
       });
     }
     function renderWechatArticle(blocks, theme) {
@@ -720,7 +717,6 @@ ${articleHtml}
           return [
             "<figure" + dataAttrs(theme) + styleAttr(s.figure) + ">",
             '<img src="' + escapeAttr(src) + '" alt="' + escapeAttr(block.alt) + '"' + styleAttr(s.img) + ">",
-            block.alt ? "<figcaption" + styleAttr(s.figcaption) + ">" + escapeHtml(block.alt) + "</figcaption>" : "",
             "</figure>"
           ].join("");
         }

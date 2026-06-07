@@ -147,14 +147,16 @@ After finishing an article package, the Skill response should explain what each 
 
 ## Reference Link Format
 
-Source links in articles and publish checklists should use standard Markdown links:
+Source links in articles and publish checklists should use plain-text URLs. WeChat Official Account articles do not support ordinary third-party link navigation, so do not format sources as Markdown links:
 
 ```markdown
-- [GitHub repository: project name](https://github.com/example/project)
-- [Official docs: project name](https://example.com/docs)
+- GitHub repository: project name https://github.com/example/project
+- Official docs: project name https://example.com/docs
 ```
 
-Avoid naked URLs such as `Project URL: https://example.com`. `scripts/check-article.mjs` checks for this.
+Avoid Markdown links such as `[Project URL](https://example.com)`. `scripts/check-article.mjs` checks articles and publish checklists for this.
+
+Image alt text is kept for Markdown semantics and accessibility, but it is not rendered as a visible caption under images in the preview page or WeChat HTML.
 
 ## What Is Included?
 

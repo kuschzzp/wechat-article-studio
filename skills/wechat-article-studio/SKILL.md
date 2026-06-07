@@ -83,21 +83,24 @@ preview.wechat.html
 7. 写可发布正文。
    - 正文写进 `article.md`，不是提纲。
    - 用短段落，技术点讲清楚，语气像真人作者。
-   - 允许有轻微吐槽和个人判断，但事实要有依据。
-   - 默认使用图床 URL 引入图片，例如 `![封面图：说明](https://example.com/image.png)`。
-   - 只有图床不可用时才使用本地路径，例如 `![封面图：说明](images/01-cover-code-city.png)`。
-   - 正文里的参考链接统一写成 `[说明](https://example.com/)`，不要写裸 URL，例如 `项目地址：https://example.com`。
+   - 允许有轻微吐槽和个人想法，但事实要有依据。
+   - 默认使用图床 URL 引入图片，例如 `![封面图](https://example.com/image.png)`。
+   - 只有图床不可用时才使用本地路径，例如 `![封面图](images/01-cover-code-city.png)`。
+   - 图片 alt 只作为 Markdown 语义和可访问性文本，不在预览页或公众号 HTML 里渲染成图片下方说明。
+   - 文章末尾如果附来源，使用纯文本，不使用 Markdown 超链接，例如 `官方文档：项目名 https://example.com/docs`。
+   - 微信公众号不支持普通第三方外链跳转。不要把来源写成 `[说明](https://example.com/)`。
 
 8. 做去 AI 味审稿。
    - 按 `references/humanizer-zh.md` 扫描正文。
    - 删除填充短语、宣传腔、宏大意义、模糊归因、通用乐观结尾。
    - 打破机械结构：连续相同句长、三段式、否定式排比、粗体标题列表。
-   - 给正文保留作者判断、具体感受和必要怀疑。
+   - 给正文保留个人想法、具体感受和必要怀疑。
    - 在 `writing-notes.md` 或 `publish-checklist.md` 里记录质量评分。
 
 9. 写发布注意事项。
    - 标题候选、摘要、封面图、图片清单、来源链接、发布前要刷新的事实、公众号编辑器注意点都写进 `publish-checklist.md`。
-   - 来源链接也必须使用 Markdown 标准链接格式，例如 `[官方文档：项目名](https://example.com/docs)`。
+   - 来源链接也必须使用纯文本格式，例如 `官方文档：项目名 https://example.com/docs`。
+   - 发布稿里需要表达个人想法的区域，统一命名为“我的想法”，不要写成“我的判断”。
    - 如果使用临时图床，必须写明过期时间和发布前检查方式。
 
 10. 渲染公众号富文本。
@@ -140,7 +143,7 @@ node _skills/wechat-article-studio/scripts/check-ai-flavor.mjs 2026-06-05-short-
 - `scaffold-article.mjs`：创建文章目录和四个 Markdown 文件。
 - `build-preview.mjs`：从 `article.md` 生成本地 `preview.html`，左侧显示 Markdown 源码，右侧实时渲染预览，并复制当前主题的公众号 HTML。
 - `render-wechat.mjs`：把 `article.md` 转成公众号可复制的内联样式 HTML，支持 `--theme`。
-- `check-article.mjs`：检查文章目录是否完整，并检查参考链接是否使用标准 Markdown 链接。
+- `check-article.mjs`：检查文章目录是否完整，并检查来源是否误用了 Markdown 超链接。
 - `check-ai-flavor.mjs`：扫描正文里的 AI 味词、公式结构和发布稿风险。
 - `upload-images.mjs`：上传正文引用的本地图片，写入图床 manifest，并默认把 `article.md` 图片路径替换成线上 URL。
 - `image-hosts/temppic.mjs`：已验证过的临时图床 provider，正式使用前仍要重新验证。
@@ -161,7 +164,7 @@ node _skills/wechat-article-studio/scripts/check-ai-flavor.mjs 2026-06-05-short-
 
 - “AI 不怕代码多，它怕没路标。”
 - “CodeGraph 更像仓库地铁图，不是自动改 bug 神器。”
-- “这个数字挺诱人。但我会把它理解成方向正确，不是装上就稳赢。”
+- “这个数字挺诱人。但我的想法是：先把它理解成方向正确，不是装上就稳赢。”
 
 避免写法：
 

@@ -147,14 +147,16 @@ Skill 会引导 Agent：
 
 ## 参考链接格式
 
-正文和发布清单里的资料来源统一使用标准 Markdown 链接：
+正文和发布清单里的资料来源统一使用纯文本 URL。微信公众号普通第三方链接不能直接跳转，所以不要写成 Markdown 超链接：
 
 ```markdown
-- [GitHub 仓库：项目名](https://github.com/example/project)
-- [官方文档：项目名](https://example.com/docs)
+- GitHub 仓库：项目名 https://github.com/example/project
+- 官方文档：项目名 https://example.com/docs
 ```
 
-不要写裸 URL，例如 `项目地址：https://example.com`。`scripts/check-article.mjs` 会检查这类问题。
+不要写 `[项目地址](https://example.com)` 这类 Markdown 超链接。`scripts/check-article.mjs` 会检查正文和发布清单里的这类问题。
+
+图片 alt 文本只用于 Markdown 语义和可访问性，不会在预览页或公众号 HTML 里渲染成图片下方说明。
 
 ## 包含什么？
 

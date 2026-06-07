@@ -13,7 +13,7 @@ node scripts/check-article.mjs <文章目录>
   article.md 是否引用至少 2 张图片
   本地图片路径是否存在
   正文图片是否默认使用图床 URL
-  正文参考链接是否使用 [说明](https://...) 格式
+  正文和发布清单里的来源是否使用纯文本 URL，而不是 Markdown 超链接
   preview.html 中的 Markdown 快照是否和 article.md 一致
   article.md 是否有明显 AI 写作痕迹
 `);
@@ -61,38 +61,14 @@ function lineNumberAt(text, index) {
   return text.slice(0, index).split("\n").length;
 }
 
-function markdownLinkRanges(text) {
-  const ranges = [];
-  const pattern = /!?\[[^\]]*]\((https?:\/\/[^)\s]+)(?:\s+"[^"]*")?\)/g;
-  let match;
-  while ((match = pattern.exec(text)) !== null) {
-    ranges.push([match.index, match.index + match[0].length]);
-  }
-  return ranges;
-}
-
-function isInsideRange(index, ranges) {
-  return ranges.some(([start, end]) => index >= start && index < end);
-}
-
-function findLinkFormatIssues(markdownText) {
+function findReferenceLinkIssues(markdownText, fileLabel) {
   const masked = maskFencedCode(markdownText);
-  const ranges = markdownLinkRanges(masked);
   const issues = [];
-  const nakedUrlPattern = /https?:\/\/[^\s<>)]+/g;
+  const markdownLinkPattern = /\[([^\]]*)]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
   let match;
-  while ((match = nakedUrlPattern.exec(masked)) !== null) {
-    if (isInsideRange(match.index, ranges)) continue;
-    issues.push(`第 ${lineNumberAt(masked, match.index)} 行发现裸 URL，请改成 [说明](${match[0]}) 格式。`);
-  }
-
-  const markdownLinkPattern = /\[[^\]]+]\(([^)\s]+)(?:\s+"[^"]*")?\)/g;
   while ((match = markdownLinkPattern.exec(masked)) !== null) {
     if (masked[match.index - 1] === "!") continue;
-    const url = match[1];
-    if (!/^https?:\/\//i.test(url)) {
-      issues.push(`第 ${lineNumberAt(masked, match.index)} 行链接缺少 http/https 协议：${match[0]}`);
-    }
+    issues.push(`${fileLabel} 第 ${lineNumberAt(masked, match.index)} 行发现 Markdown 超链接。公众号外部来源请改成纯文本，例如：${match[1]}：${match[2]}`);
   }
 
   return issues;
@@ -110,8 +86,14 @@ if (!markdown.trim()) {
   错误.push("article.md 为空。");
 }
 
-const linkFormatIssues = findLinkFormatIssues(markdown);
+const linkFormatIssues = findReferenceLinkIssues(markdown, "article.md");
 for (const issue of linkFormatIssues) {
+  错误.push(issue);
+}
+
+const publishChecklist = await readIfExists(path.join(articleDir, "publish-checklist.md"));
+const checklistLinkIssues = findReferenceLinkIssues(publishChecklist, "publish-checklist.md");
+for (const issue of checklistLinkIssues) {
   错误.push(issue);
 }
 
