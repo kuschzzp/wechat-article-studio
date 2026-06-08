@@ -104,7 +104,7 @@ The Skill will guide the agent to:
 5. Generate images with `image-gen` one at a time when available.
 6. Upload local article images to a configurable image host by default.
 7. Replace Markdown image paths with hosted URLs when upload succeeds.
-8. Write the publishable article in `article.md`.
+8. Write the publishable Markdown article in `article.md`.
 9. Run Chinese humanizer checks.
 10. Render `publish.wechat.html` with the selected theme.
 11. Generate `preview.html` with a left Markdown source pane, right rendered preview pane, style selector, and current-theme copy button.
@@ -144,6 +144,8 @@ WeChat rich-text output is generated as inline-style HTML because WeChat editors
 The bundled themes are `coral-tab`, `minimal-black`, and `blue-grid`; `coral-tab` remains the default. `scripts/render-wechat.mjs` supports `--theme`, and `preview.html` uses the same theme definitions for copied WeChat HTML.
 
 After finishing an article package, the Skill response should explain what each main file is for so the author knows which files support writing, previewing, copying, image hosting, and publish checks.
+
+Article structure checks are advisory. They can flag missing section headings, generic image alt text, or long articles without lists or quotes, but they do not force every article into the same template.
 
 ## Reference Link Format
 

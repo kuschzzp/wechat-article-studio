@@ -104,7 +104,7 @@ Skill 会引导 Agent：
 5. 在可用时用 `image-gen` 按顺序逐张生成图片。
 6. 默认把本地图片上传到可配置的图片托管服务。
 7. 上传成功后，把正文图片路径替换成线上 URL。
-8. 写 `article.md` 发布稿。
+8. 写保留 Markdown 骨架的 `article.md` 发布稿。
 9. 做中文去 AI 味检查。
 10. 按所选主题渲染 `publish.wechat.html`。
 11. 生成左侧源码、右侧渲染预览的 `preview.html`，并保留样式下拉框和复制按钮。
@@ -144,6 +144,8 @@ Skill 会引导 Agent：
 当前内置主题包括 `coral-tab`、`minimal-black` 和 `blue-grid`，默认仍然使用 `coral-tab`。`scripts/render-wechat.mjs` 支持用 `--theme` 指定主题，`preview.html` 会用同一套主题配置生成复制内容。
 
 完成一篇文章后，Skill 的交付回复会说明每个主要文件的作用，方便作者知道哪些文件用于写作、预览、复制、图床追踪和发布检查。
+
+正文结构检查以提醒为主。它会提示二级标题太少、图片 alt 太泛、长文缺少列表或引用等问题，但不会把所有文章强行锁成同一个模板。
 
 ## 参考链接格式
 

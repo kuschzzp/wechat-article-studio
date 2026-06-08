@@ -14,6 +14,7 @@ node scripts/check-article.mjs <文章目录>
   本地图片路径是否存在
   正文图片是否默认使用图床 URL
   正文和发布清单里的来源是否使用纯文本 URL，而不是 Markdown 超链接
+  正文 Markdown 是否有基本文章结构
   preview.html 中的 Markdown 快照是否和 article.md 一致
   article.md 是否有明显 AI 写作痕迹
 `);
@@ -74,6 +75,92 @@ function findReferenceLinkIssues(markdownText, fileLabel) {
   return issues;
 }
 
+function isMarkdownControlLine(trimmed) {
+  return /^#{1,6}\s+/.test(trimmed)
+    || /^!\[[^\]]*]\([^)]+\)/.test(trimmed)
+    || /^[-*]\s+/.test(trimmed)
+    || /^>\s?/.test(trimmed)
+    || /^```/.test(trimmed);
+}
+
+function getMarkdownStructure(markdownText) {
+  const masked = maskFencedCode(markdownText);
+  const lines = masked.split("\n");
+  const structure = {
+    h1: 0,
+    h2: 0,
+    listItems: 0,
+    quotes: 0,
+    paragraphs: 0,
+    maxShortParagraphRun: 0,
+  };
+  let shortParagraphRun = 0;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      continue;
+    }
+    if (/^#\s+/.test(trimmed)) structure.h1 += 1;
+    if (/^##\s+/.test(trimmed)) structure.h2 += 1;
+    if (/^[-*]\s+/.test(trimmed)) structure.listItems += 1;
+    if (/^>\s?/.test(trimmed)) structure.quotes += 1;
+
+    if (!isMarkdownControlLine(trimmed)) {
+      structure.paragraphs += 1;
+      if (trimmed.length <= 24 && /[。！？.!?]$/.test(trimmed)) {
+        shortParagraphRun += 1;
+        structure.maxShortParagraphRun = Math.max(structure.maxShortParagraphRun, shortParagraphRun);
+      } else {
+        shortParagraphRun = 0;
+      }
+      continue;
+    }
+
+    shortParagraphRun = 0;
+  }
+
+  return structure;
+}
+
+function isGenericImageAlt(alt) {
+  const normalized = String(alt || "").replace(/\s+/g, "");
+  if (!normalized) return true;
+  return /^(封面图|正文图|痛点图|方法图|配图|插图|图片|图\d+|第\d+张图)$/.test(normalized);
+}
+
+function findStructureWarnings(markdownText, images) {
+  const structure = getMarkdownStructure(markdownText);
+  const warnings = [];
+  const isLongArticle = structure.paragraphs >= 35 || markdownText.length >= 1200;
+
+  if (structure.h1 !== 1) {
+    warnings.push(`正文 H1 数量为 ${structure.h1} 个。通常建议 article.md 只有 1 个主标题。`);
+  }
+  if (isLongArticle && structure.h2 === 0) {
+    warnings.push("正文较长但没有二级标题，读起来容易像一整段口播稿。建议补 3-5 个 `##` 小节。");
+  } else if (isLongArticle && structure.h2 < 3) {
+    warnings.push(`正文较长但只有 ${structure.h2} 个二级标题。建议补到 3 个以上，但不必强行套满模板。`);
+  }
+  if (isLongArticle && structure.listItems === 0 && structure.quotes === 0) {
+    warnings.push("正文较长但没有列表或引用块。建议至少用一次列表或引用，给读者一个可扫描的停靠点。");
+  }
+  if (isLongArticle && !/^##\s+我的想法\s*$/m.test(markdownText)) {
+    warnings.push("建议用 `## 我的想法` 作为观点收束段；如果文章很短或已有更自然的收尾，可以人工忽略。");
+  }
+  if (structure.maxShortParagraphRun >= 8) {
+    warnings.push(`发现连续 ${structure.maxShortParagraphRun} 个短句段落。短段落可以保留，但建议把解释性内容合并，避免整篇过碎。`);
+  }
+
+  for (const image of images) {
+    if (isGenericImageAlt(image.alt)) {
+      warnings.push(`图片 alt 偏泛：\`${image.alt || "(空)"}\`。建议写成画面描述，例如 \`封面图：创作者面对空白文档和一堆教程\`，但不会渲染为图注。`);
+    }
+  }
+
+  return warnings;
+}
+
 for (const file of 必备文件) {
   if (!(await exists(path.join(articleDir, file)))) {
     错误.push(`缺少必备文件：${file}`);
@@ -107,6 +194,10 @@ if (humanizerScore < 45 || highHumanizerCount > 0) {
 const images = extractMarkdownImages(markdown);
 if (images.length < 2) {
   错误.push(`正文图片数量不足：当前 ${images.length} 张，至少需要 2 张。`);
+}
+
+for (const warning of findStructureWarnings(markdown, images)) {
+  警告.push(warning);
 }
 
 const localImages = images.filter((image) => !isRemoteUrl(image.src));
